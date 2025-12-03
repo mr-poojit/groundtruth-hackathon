@@ -1,10 +1,10 @@
 fastapi
 uvicorn[standard]
 pandas
+openpyxl
 matplotlib
-reportlab
+seaborn
 python-multipart
-google-generativeai
-requests
-python-dotenv
 python-pptx
+reportlab
+google-generativeai
