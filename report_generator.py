@@ -1,6 +1,9 @@
 import datetime
 import os
 import zipfile
+from pptx.util import Inches, Pt
+from pptx.dml.color import RGBColor
+from textwrap import wrap
 
 from reportlab.platypus import (
     SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
@@ -28,67 +31,94 @@ def create_pdf(metrics, chart_paths, insights_text):
         pagesize=A4,
         rightMargin=40,
         leftMargin=40,
-        topMargin=40,
+        topMargin=50,
         bottomMargin=30
     )
 
     styles = getSampleStyleSheet()
-    title_style = styles['Title']
-    title_style.fontSize = 22
-    title_style.leading = 26
+    title = styles['Title']
+    title.fontSize = 22
 
-    body = styles['BodyText']
-    body.fontSize = 11
-    body.leading = 16
+    h2 = styles['Heading2']
+    h2.spaceAfter = 12
+
+    p = styles['BodyText']
+    p.fontSize = 11
+    p.leading = 15
 
     story = []
 
-    # Report Title
-    story.append(Paragraph("📊 Weekly Performance Report", title_style))
+    # Title
+    story.append(Paragraph("📊 Automated Insight Report", title))
     story.append(Spacer(1, 20))
 
-    # Executive Summary
-    story.append(Paragraph("<b>Executive Summary</b>", styles['Heading2']))
-    story.append(Spacer(1, 6))
+    # AI Insights Section
+    story.append(Paragraph("Executive Summary", h2))
 
-    formatted_insights = insights_text.replace("\n", "<br/>")
-    story.append(Paragraph(formatted_insights, body))
-    story.append(Spacer(1, 18))
+    # Clean markdown-like output
+    clean = insights_text.replace("* ", "• ").replace("\n", "<br/>")
+    story.append(Paragraph(clean, p))
+    story.append(Spacer(1, 20))
 
-    # Metrics Table
-    story.append(Paragraph("<b>Key Metrics</b>", styles['Heading2']))
-    story.append(Spacer(1, 10))
+    # Metrics Section
+    story.append(Paragraph("Key Metrics", h2))
 
     table_rows = [["Metric", "Value"]]
-    for k, v in metrics.items():
-        table_rows.append([str(k), str(v)])
 
-    table = Table(table_rows, colWidths=[200, 200])
+    for k, v in metrics.items():
+        if k == "Top Cities" and isinstance(v, dict):
+            nice = "<br/>".join([f"{c}: {val}" for c, val in v.items()])
+            table_rows.append([k, nice])
+        else:
+            table_rows.append([k, str(v)])
+
+    table = Table(table_rows, colWidths=[180, 300])
     table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#E8E8E8")),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('ALIGN', (1, 1), (-1, -1), 'RIGHT'),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#E5E5E5")),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('ALIGN', (0,0), (-1,-1), 'LEFT'),
+        ('VALIGN', (0,0), (-1,-1), 'TOP'),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
+        ('LEFTPADDING', (0,0), (-1,-1), 6),
+        ('RIGHTPADDING', (0,0), (-1,-1), 6)
     ]))
+
     story.append(table)
     story.append(Spacer(1, 25))
 
-    # Charts Section
-    story.append(Paragraph("<b>Generated Charts</b>", styles['Heading2']))
-    story.append(Spacer(1, 10))
+    # Charts
+    story.append(Paragraph("Visual Insights", h2))
 
     for ch in chart_paths:
         story.append(Image(ch, width=450, height=250))
-        story.append(Spacer(1, 15))
+        story.append(Spacer(1, 18))
 
     doc.build(story)
     return pdf_path
 
 
+
 # ------------------------------------------------------------
 # PPT GENERATION (Premium Professional Layout)
 # ------------------------------------------------------------
+
+def add_wrapped_textbox(slide, text, left, top, width, height, font_size=18):
+    tx = slide.shapes.add_textbox(left, top, width, height)
+    tf = tx.text_frame
+    tf.word_wrap = True
+    tf.margin_left = 2000
+    tf.margin_right = 2000
+    tf.margin_top = 1000
+
+    for line in text.split("\n"):
+        if not line.strip():
+            continue
+        p = tf.add_paragraph()
+        p.text = line
+        p.font.size = Pt(font_size)
+        p.font.color.rgb = RGBColor(50, 50, 50)
+        p.level = 0
+
 
 def create_ppt(metrics, chart_paths, insights_text):
     ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -96,63 +126,54 @@ def create_ppt(metrics, chart_paths, insights_text):
 
     prs = Presentation()
 
-    # ------------------------------
-    # Slide 1 — Title Slide
-    # ------------------------------
+    # TITLE SLIDE
     slide = prs.slides.add_slide(prs.slide_layouts[0])
-    slide.shapes.title.text = "Weekly Performance Report"
-    subtitle = slide.placeholders[1]
-    subtitle.text = "Automated Insight Engine\nGenerated using AI"
+    slide.shapes.title.text = "Automated Insight Report"
+    slide.placeholders[1].text = "Generated using AI insights and performance analytics"
 
-    # ------------------------------
-    # Slide 2 — Executive Summary
-    # ------------------------------
-    slide = prs.slides.add_slide(prs.slide_layouts[1])
-    slide.shapes.title.text = "Executive Summary"
+    # EXEC SUMMARY - AUTO SPLIT
+    chunks = wrap(insights_text, 450)
 
-    tf = slide.placeholders[1].text_frame
-    tf.clear()
+    for chunk in chunks:
+        slide = prs.slides.add_slide(prs.slide_layouts[5])
+        slide.shapes.title.text = "Executive Summary"
 
-    for line in insights_text.split("\n"):
-        p = tf.add_paragraph()
-        p.text = line.strip()
-        p.level = 0
-        p.font.size = Pt(18)
-        p.font.color.rgb = RGBColor(60, 60, 60)
+        add_wrapped_textbox(
+            slide,
+            chunk,
+            Inches(0.5),
+            Inches(1.5),
+            Inches(9),
+            Inches(4.5),
+            font_size=18
+        )
 
-    # ------------------------------
-    # Slide 3 — Metrics Slide
-    # ------------------------------
-    slide = prs.slides.add_slide(prs.slide_layouts[1])
-    slide.shapes.title.text = "Key Metrics Summary"
+    # METRICS SLIDE
+    slide = prs.slides.add_slide(prs.slide_layouts[5])
+    slide.shapes.title.text = "Key Metrics"
 
-    tf = slide.placeholders[1].text_frame
-    tf.clear()
+    metric_text = "\n".join([
+        f"{k}: {v}" for k, v in metrics.items()
+    ])
 
-    for k, v in metrics.items():
-        p = tf.add_paragraph()
-        p.text = f"{k}: {v}"
-        p.level = 0
-        p.font.size = Pt(20)
-        p.font.bold = True
+    add_wrapped_textbox(
+        slide,
+        metric_text,
+        Inches(0.5),
+        Inches(1.5),
+        Inches(9),
+        Inches(4.5),
+        font_size=20
+    )
 
-    # ------------------------------
-    # Slide 4+ — Chart Slides
-    # ------------------------------
+    # CHART SLIDES
     for ch in chart_paths:
         slide = prs.slides.add_slide(prs.slide_layouts[5])
-        slide.shapes.title.text = "Generated Chart"
-
-        slide.shapes.add_picture(
-            ch,
-            Inches(1),
-            Inches(1.5),
-            width=Inches(8)
-        )
+        slide.shapes.title.text = "Visual Insight"
+        slide.shapes.add_picture(ch, Inches(1), Inches(1.7), width=Inches(8))
 
     prs.save(ppt_path)
     return ppt_path
-
 
 # ------------------------------------------------------------
 # ZIP PACKAGING (PDF + PPTX + All Charts)
