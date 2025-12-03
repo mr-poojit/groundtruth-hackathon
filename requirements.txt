@@ -7,4 +7,6 @@ seaborn
 python-multipart
 python-pptx
 reportlab
+scikit-learn
 google-generativeai
+python-dotenv
