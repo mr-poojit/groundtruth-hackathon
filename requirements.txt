@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+pandas
+matplotlib
+reportlab
+python-multipart
+google-auth
+requests
+python-dotenv
