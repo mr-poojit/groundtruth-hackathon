@@ -1,0 +1,10 @@
+date,campaign,city,impressions,clicks,traffic,spend
+2025-01-01,CoffeePush,Delhi,2000,110,180,45.00
+2025-01-01,CoffeePush,Mumbai,1600,90,150,38.00
+2025-01-01,CoffeePush,Bangalore,1500,70,140,35.00
+2025-01-02,CoffeePush,Delhi,2200,120,190,50.00
+2025-01-02,CoffeePush,Mumbai,1700,100,160,39.00
+2025-01-02,CoffeePush,Bangalore,1600,85,150,36.00
+2025-01-03,CoffeePush,Delhi,2500,140,210,55.00
+2025-01-03,CoffeePush,Mumbai,1900,120,175,42.00
+2025-01-03,CoffeePush,Bangalore,1800,100,165,40.00
