@@ -4,6 +4,7 @@ pandas
 matplotlib
 reportlab
 python-multipart
-google-auth
+google-generativeai
 requests
 python-dotenv
+python-pptx
