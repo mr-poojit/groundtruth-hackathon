@@ -80,7 +80,7 @@ def generate_charts(df):
 
     return chart_paths
 
-def process_and_generate(files):
+def process_and_generate(files, base_name):
     df = read_and_merge(files)
     df = clean_df(df)
 
@@ -97,8 +97,9 @@ def process_and_generate(files):
     """
     insights = generate_insights(prompt)
 
-    pdf = create_pdf(metrics, charts, insights)
-    ppt = create_ppt(metrics, charts, insights)
-    zip_path = create_zip(pdf, ppt, charts)
+    pdf = create_pdf(metrics, charts, insights, base_name)
+    ppt = create_ppt(metrics, charts, insights, base_name)
+    zip_path = create_zip(pdf, ppt, charts, base_name)
 
     return zip_path
+

@@ -22,9 +22,10 @@ from pptx.dml.color import RGBColor
 # PDF GENERATION (Polished + Professional Layout)
 # ------------------------------------------------------------
 
-def create_pdf(metrics, chart_paths, insights_text):
+
+def create_pdf(metrics, chart_paths, insights_text, base_name):
     ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    pdf_path = f"output/report_{ts}.pdf"
+    pdf_path = f"output/{base_name}.pdf"
 
     doc = SimpleDocTemplate(
         pdf_path,
@@ -120,10 +121,9 @@ def add_wrapped_textbox(slide, text, left, top, width, height, font_size=18):
         p.level = 0
 
 
-def create_ppt(metrics, chart_paths, insights_text):
+def create_ppt(metrics, chart_paths, insights_text, base_name):
     ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    ppt_path = f"output/report_{ts}.pptx"
-
+    ppt_path = f"output/{base_name}.pptx"
     prs = Presentation()
 
     # TITLE SLIDE
@@ -179,8 +179,8 @@ def create_ppt(metrics, chart_paths, insights_text):
 # ZIP PACKAGING (PDF + PPTX + All Charts)
 # ------------------------------------------------------------
 
-def create_zip(pdf_path, ppt_path, chart_paths):
-    zip_path = pdf_path.replace(".pdf", ".zip")
+def create_zip(pdf_path, ppt_path, chart_paths, base_name):
+    zip_path = f"output/{base_name}.zip"
 
     with zipfile.ZipFile(zip_path, "w") as z:
         z.write(pdf_path, os.path.basename(pdf_path))
