@@ -19,11 +19,11 @@ This results in:
 
 ---
 
-## 2. My Solution — TrendSpotter
+## 2. My Solution 
 
 TrendSpotter eliminates manual reporting entirely by automating the full analytics lifecycle and supporting **multiple data source types**, not just CSV.
 
-### 🎯 What TrendSpotter Accepts:
+### 🎯 What Engine Accepts:
 
 - **CSV files** (traffic logs, ad-performance logs, exports)
 - **Excel files (.xlsx)**
@@ -34,7 +34,7 @@ TrendSpotter eliminates manual reporting entirely by automating the full analyti
 
 TrendSpotter automatically detects the file type, extracts the data, normalizes the schema, and processes it.
 
-### 🎯 What TrendSpotter Does:
+### 🎯 What This Does:
 
 1. Accepts one or more data files in different formats
 2. Automatically extracts, merges & processes all datasets
@@ -97,7 +97,7 @@ TrendSpotter is designed to be production-grade and extensible.
 
 ### 🤖 AI Insights Layer
 
-- Uses **Google Gemini 1.5 Flash / Pro**
+- Uses **Google Gemini 2.0 Flash / Pro**
 - Uses a structured prompt to sound like a senior analyst
 - AI explanations include:
   - Performance summary
@@ -154,7 +154,7 @@ Solution: Strict grounding prompt + JSON summary validation.
 
 ---
 
-## 7. How to Run TrendSpotter
+## 7. How to Run 
 
 ### 1️⃣ Install Dependencies
 
@@ -222,5 +222,5 @@ Download your ZIP report.
 
 ## ⭐ Final Note
 
-TrendSpotter turns multi-format raw data into polished executive insights — instantly.  
+This turns multi-format raw data into polished executive insights — instantly.  
 It eliminates manual reporting, reduces errors, and enables teams to focus on **strategy**, not spreadsheets.
